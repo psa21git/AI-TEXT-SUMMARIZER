@@ -5,13 +5,10 @@ class SummarizerService:
     def __init__(self):
         self.hf_api_token = os.environ.get("HF_API_TOKEN")
         self.summarizer = None
-        if not self.hf_api_token:
-            self.load_local_model()
 
     def load_local_model(self):
         try:
-            print("No HF_API_TOKEN found. Loading local summarization model...")
-            # We import transformers only locally to save RAM on Render!
+            print("Loading local summarization model...")
             from transformers import pipeline
             self.summarizer = pipeline(model="Falconsai/text_summarization")
             print("Local model loaded successfully.")
@@ -30,6 +27,7 @@ class SummarizerService:
         if len(text) > 3000:
             text = text[:3000]
 
+        # Use HF Token if available
         if self.hf_api_token:
             print("Using Hugging Face Inference API...")
             headers = {"Authorization": f"Bearer {self.hf_api_token}"}
@@ -44,11 +42,16 @@ class SummarizerService:
             else:
                 raise ValueError(f"HF API Error: {response.text}")
         else:
+            # Prevent Render crash if they forgot the token
+            if os.environ.get("RENDER"):
+                raise ValueError("CRITICAL: You must add the HF_API_TOKEN to your Render Environment Variables! Local model execution is blocked on Render to prevent out-of-memory crashes.")
+
             if not self.summarizer:
                 print("Local model not loaded. Attempting to load it now...")
                 self.load_local_model()
                 if not self.summarizer:
-                    raise ValueError("Summarization model is not loaded (OOM Memory Error). Please provide an HF_API_TOKEN.")
+                    raise ValueError("Summarization model is not loaded. Please provide an HF_API_TOKEN.")
+            
             try:
                 result = self.summarizer(text, max_length=actual_max_length, min_length=actual_min_length, do_sample=False)
                 return result[0]['summary_text']
