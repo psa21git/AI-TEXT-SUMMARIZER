@@ -7,3 +7,4 @@ PyPDF2
 transformers<5.0.0
 torch
 sentencepiece
+requests
