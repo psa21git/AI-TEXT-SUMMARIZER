@@ -4,5 +4,6 @@ uvicorn
 pydantic
 python-multipart
 PyPDF2
-transformers
+transformers<5.0.0
 torch
+sentencepiece

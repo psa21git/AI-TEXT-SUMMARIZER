@@ -9,7 +9,7 @@ class SummarizerService:
     def load_model(self):
         try:
             print("Loading summarization model...")
-            self.summarizer = pipeline("summarization", model="Falconsai/text_summarization")
+            self.summarizer = pipeline(model="Falconsai/text_summarization")
             print("Model loaded successfully.")
         except Exception as e:
             print(f"Error loading model: {e}")
