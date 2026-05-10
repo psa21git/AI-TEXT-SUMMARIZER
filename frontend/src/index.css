@@ -1,0 +1,35 @@
+/* Custom properties and reset */
+:root {
+  --bg-color: #030014;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-1: #8b5cf6;
+  --accent-2: #d946ef;
+  --surface-color: rgba(30, 41, 59, 0.4);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --danger: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(217, 70, 239, 0.15), transparent 25%);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
