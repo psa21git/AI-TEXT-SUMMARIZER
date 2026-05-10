@@ -30,17 +30,21 @@ class SummarizerService:
         # Use HF Token if available
         if self.hf_api_token:
             print("Using Hugging Face Inference API...")
-            headers = {"Authorization": f"Bearer {self.hf_api_token}"}
-            API_URL = "https://api-inference.huggingface.co/models/Falconsai/text_summarization"
-            payload = {
-                "inputs": text,
-                "parameters": {"max_length": actual_max_length, "min_length": actual_min_length, "do_sample": False}
-            }
-            response = requests.post(API_URL, headers=headers, json=payload)
-            if response.status_code == 200:
-                return response.json()[0]['summary_text']
-            else:
-                raise ValueError(f"HF API Error: {response.text}")
+            try:
+                from huggingface_hub import InferenceClient
+                client = InferenceClient(token=self.hf_api_token)
+                result = client.summarization(text, model="facebook/bart-large-cnn")
+                
+                if hasattr(result, "summary_text"):
+                    return result.summary_text
+                elif isinstance(result, dict) and "summary_text" in result:
+                    return result["summary_text"]
+                elif isinstance(result, list) and len(result) > 0 and "summary_text" in result[0]:
+                    return result[0]["summary_text"]
+                else:
+                    return str(result)
+            except Exception as e:
+                raise ValueError(f"HF API Error: {str(e)}")
         else:
             # Prevent Render crash if they forgot the token
             if os.environ.get("RENDER"):
